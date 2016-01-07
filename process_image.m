@@ -1,16 +1,14 @@
-function [stats,I2,I3] = process_image(I1, threshold, md)
-% Accepts image, threshold value
+function [stats,I6] = process_image(I3)
+% Accepts image, known mean diameter
 % Returns table of particle properties
 
-% Convert to grayscale
-I2=rgb2gray(I1);
-
-% Detect edges, return binary image
-% I3=I2>threshold;
-I3 = edge(I2, 'canny', 0.1);
+% Detect edges, find binary image
+I4 = edge(I3, 'canny', 0.1);
+I6 = imfill(I4,'holes'); % fill 'holes'
+% I6 = I5 - I4; % subtract 'edges' from 'filled holes'
 
 % process image
-stats = regionprops('struct',I3,I2,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid');
+stats = regionprops('struct',I6,I3,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid');
 
 % for each particle, calculate sig_x, sig_y and add to stats
 for i=1:length(stats)
@@ -20,16 +18,16 @@ for i=1:length(stats)
     [stats(i).sig_x, stats(i).sig_y] = particle_stdev(X,Y,I);
 end
 
-% calculate intensity-weighted particle diameter and add to stats
+% calculate intensity-weighted particle diameter in pixels and add to stats
 for i=1:length(stats)
     stats(i).d_e = 0.5*([stats(i).sig_x] + [stats(i).sig_y]);
 end
 
-% calculate constant in um/px
-m=mean([stats.d_e]); % intensity-weighted mean diameter in pixels
-constant=(md/m); % calibration constant, um/pixel
-
-% calculate actual particle diameter and add to stats
+% remove zero-sized entries
+filter = [];
 for i=1:length(stats)
-    stats(i).d_p = constant*stats(i).d_e; % actual diameter
+    if (stats(i).d_e == 0)
+        filter = [filter, i]; % indicies to remove
+    end
 end
+stats(filter) = [];
