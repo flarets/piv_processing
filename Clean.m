@@ -1,9 +1,7 @@
-% Notes:
-%  - imdfindcircles: requires a small radius range (<10px) and works best 
-%    for radii >10px. That is, not suitable for these particles.
-
 clc; clear; close all;
-% warning('off','all')
+
+% -----------------------------------
+% Read image
 
 ifname = 'PIV 1.44lfry23.000000b.bmp';
 I1 = imread(ifname);
@@ -20,7 +18,7 @@ I3 = butterworth_noise_filter(I2,f_c);
 
 % use a simple grayscale threshold to remove noise
 threshold = 28;
-I_bin = I3>threshold;
+I_bin = I3 > threshold;
 I3 = uint8(I_bin).*I3;
 
 % -----------------------------------
