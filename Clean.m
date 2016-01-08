@@ -32,7 +32,6 @@ d = [stats.d_e]; % diameters, px
 dp_m = 10; % known mean diameter, um
 bw = 0.05; % bin width, px
 de_m = plot_histogram(d, bw, 'LogNormal');
-close(); 
 [stats] = scale_data(stats, dp_m, de_m);
 
 % -----------------------------------
@@ -43,10 +42,10 @@ d_min = 0;  % um
 d_max = 50; % um
 [stats] = filter_size(stats, d_min, d_max);
 
-% Filter based on skewness
-a_min = 0.85;
-a_max = 1/0.85;
-[stats] = filter_asym(stats, a_min, a_max);
+% % Filter based on skewness
+% a_min = 0.85;
+% a_max = 1/0.85;
+% [stats] = filter_asym(stats, a_min, a_max);
 
 % -----------------------------------
 % Plot particle data
@@ -64,16 +63,19 @@ title('grayscale image');
 
 ax(1)=subplot(2,2,2);
 imshow(I3,'InitialMagnification','fit');
-title('noise removal');
+title('noise removal and threshold');
 
 ax(2)=subplot(2,2,3);
 imshow(I4,'InitialMagnification','fit');
-title('binary image');
+hold on;
+C = reshape([stats.WeightedCentroid],2,length(stats))'; % particle centroids
+plot(C(:,1), C(:,2), 'bx');
+hold off;
+title('binary image and centroids');
 
 ax(3) = subplot(2,2,4);
 imshow(I1,'InitialMagnification','fit');
 hold on;
-C = reshape([stats.WeightedCentroid],2,length(stats))'; % particle centroids
 radii = 0.5*[stats.d_e]; % particle radii
 viscircles(C,radii);
 hold off;

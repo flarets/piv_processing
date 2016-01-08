@@ -4,7 +4,7 @@ function [stats,I6] = process_image(I3)
 
 % Detect edges, find binary image
 I4 = edge(I3, 'canny', 0.1);
-I6 = imfill(I4,'holes'); % fill 'holes'
+I6 = imfill(I4, 'holes'); % fill 'holes'
 % I6 = I5 - I4; % subtract 'edges' from 'filled holes'
 
 % process image
