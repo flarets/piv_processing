@@ -1,14 +1,9 @@
-function [stats,I6] = process_image(I3)
-% Accepts image, known mean diameter
+function [stats, I_bin] = process_image(I_bin, I3)
+% Accepts image, and a binary image
 % Returns table of particle properties
 
-% Detect edges, find binary image
-I4 = edge(I3, 'canny', 0.1);
-I6 = imfill(I4, 'holes'); % fill 'holes'
-% I6 = I5 - I4; % subtract 'edges' from 'filled holes'
-
 % process image
-stats = regionprops('struct',I6,I3,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid');
+stats = regionprops('struct',I_bin,I3,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid');
 
 % for each particle, calculate sig_x, sig_y and add to stats
 for i=1:length(stats)

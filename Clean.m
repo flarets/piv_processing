@@ -16,22 +16,41 @@ I2 = rgb2gray(I1);
 f_c = 0.5; % cutoff frequency
 I3 = butterworth_noise_filter(I2,f_c);
 
-% use a simple grayscale threshold to remove noise
-threshold = 28;
+% increase image contrast
+I3 = contrast_image(I3,0.6);
+
+% matlab contrast function
+% I3 = imadjust(I3, [0.4, 0.9], []);
+
+% use a simple grayscale threshold to create binary image
+threshold = 55;
 I_bin = I3 > threshold;
+
+% Detect edges and fill to create binary image
+% I4 = edge(I3, 'canny', 0.1);
+% I_bin = imfill(I4, 'holes'); % fill 'holes'
+% I_bin = logical(I5 - I4); % subtract 'edges' from 'filled holes'
+
+% use binary image to filter grayscale image
 I3 = uint8(I_bin).*I3;
 
 % -----------------------------------
-% Process identified particles
+% Get particle data from noise-reduced and binary images
 
 % extract particle data from image
-[stats,I4] = process_image(I3);
+[stats] = process_image(I_bin, I3);
+
+% Filter particles less than 0.5px
+p_min = 0.5;  % px
+p_max = 20;   % px
+[stats] = filter_pixel_size(stats, p_min, p_max);
 
 % find intensity-weighted mean diameter in pixels and scale data
 d = [stats.d_e]; % diameters, px
 dp_m = 10; % known mean diameter, um
 bw = 0.05; % bin width, px
 de_m = plot_histogram(d, bw, 'LogNormal');
+close(); 
 [stats] = scale_data(stats, dp_m, de_m);
 
 % -----------------------------------
@@ -39,7 +58,7 @@ de_m = plot_histogram(d, bw, 'LogNormal');
 
 % Filter based on diameter, um
 d_min = 0;  % um
-d_max = 50; % um
+d_max = 30; % um
 [stats] = filter_size(stats, d_min, d_max);
 
 % % Filter based on skewness
@@ -66,7 +85,7 @@ imshow(I3,'InitialMagnification','fit');
 title('noise removal and threshold');
 
 ax(2)=subplot(2,2,3);
-imshow(I4,'InitialMagnification','fit');
+imshow(I_bin,'InitialMagnification','fit');
 hold on;
 C = reshape([stats.WeightedCentroid],2,length(stats))'; % particle centroids
 plot(C(:,1), C(:,2), 'bx');
