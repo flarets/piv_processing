@@ -3,48 +3,57 @@ clc; clear; close all;
 % -----------------------------------
 % Read image
 
-ifname = 'PIV 1.44lfry23.000000b.bmp';
-I1 = imread(ifname);
+% ifname = 'PIV 1.44lfry23.000000b.bmp';
+ifname = 'PIV 3.3tybhxyw.000000.csv';
+% I1 = imread(ifname);
+I2 = csvreadfile(ifname);
+I3 = gpuArray(I2);
 
 % Convert to grayscale
-I2 = rgb2gray(I1);
-
+% I2 = rgb2gray(I1);
 % -----------------------------------
 % Noise filters
 
 % use 6th order butterworth filter to remove noise
-f_c = 0.5; % cutoff frequency
-I3 = butterworth_noise_filter(I2,f_c);
-
-% increase image contrast
-I3 = contrast_image(I3,0.6);
+% f_c = 0.2; % cutoff frequency
+% I3 = butterworth_noise_filter(I2,f_c);
+% I3 = I2;
+% % increase contrast using linear function
+% threshold = 2e3;
+% I3 = I2>threshold;
+% I3 = contrast_image(I3,threshold,60e3);
+t_range = 2^16-1;
+t_min = 1900;
+t_max = 25e3;
+I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
 % matlab contrast function
 % I3 = imadjust(I3, [0.4, 0.9], []);
-
-% use a simple grayscale threshold to create binary image
-threshold = 55;
-I_bin = I3 > threshold;
+% S = min(I3);
+% min(S)
+% use thresholded image to create binary
+I_bin = (I3>2e3);
 
 % Detect edges and fill to create binary image
 % I4 = edge(I3, 'canny', 0.1);
 % I_bin = imfill(I4, 'holes'); % fill 'holes'
 % I_bin = logical(I5 - I4); % subtract 'edges' from 'filled holes'
+figure
+ax(1) = subplot(1,2,1);
+imshow(I2)
 
-% use binary image to filter grayscale image
-I3 = uint8(I_bin).*I3;
+ax(2) = subplot(1,2,2);
+imshow(I3);
 
+linkaxes(ax,'xy');
 % -----------------------------------
 % Get particle data from noise-reduced and binary images
 
 % extract particle data from image
 [stats] = process_image(I_bin, I3);
 
-% -----------------------------------
-% Threshold and scale particle data
-
 % Filter particles less than 0.5px
-p_min = 0.5;  % px
+p_min = 0.25;  % px
 p_max = 20;   % px
 [stats] = filter_pixel_size(stats, p_min, p_max);
 
@@ -74,7 +83,7 @@ d_max = 30; % um
 
 % plot original image
 figure()
-imshow(I1,'InitialMagnification','fit');
+imshow(I2,'InitialMagnification','fit');
 title(sprintf('original image: %s', ifname));
 
 % plot grayscale image, thresholded image, filtered image with identified particles
@@ -96,7 +105,7 @@ hold off;
 title('binary image and centroids');
 
 ax(3) = subplot(2,2,4);
-imshow(I1,'InitialMagnification','fit');
+imshow(I2,'InitialMagnification','fit');
 hold on;
 radii = 0.5*[stats.d_e]; % particle radii
 viscircles(C,radii);
