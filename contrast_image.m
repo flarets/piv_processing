@@ -1,15 +1,27 @@
-function I_out = contrast_image(I_in, C)
-
-% applies a tanh function to contrast the greyscale image
-% C can be used to increase or decrease the contrast
+function I_out = contrast_image(I_in, g_min, g_max)
+% applies a linear function to contrast the greyscale image
+% g_min = ?
+% g_max = 2^16-1 typ
+I_in = gather(I_in); % convert to matlab array
 
 [n, m] = size(I_in);
+I_out = zeros(n,m);
+
 for i=[1:n]
     for j=[1:m]
-        s = scale_color(I_in(i,j),C);
-        I_out(i,j) = uint8(s*I_in(i,j));
+        I_out(i,j) = (fun(I_in(i,j), g_min, g_max));
     end
 end
+I_out = gpuArray(I_out)
 
-function y = scale_color(x,C)
-y = C*tanh(10*double(x)/255 - 5) + 1; % value to scale image intensity
+function y = fun(x, g_min, g_max)
+% value to scale image intensity
+% y = 0.5*100*(tanh(20*double(x)/100 - 5) + 1);
+a = 2^16-1;
+if x < g_min
+    y = 0;
+elseif x > g_max
+    y = a;
+else
+    y = (a/(g_max - g_min))*(x - g_min);
+end
