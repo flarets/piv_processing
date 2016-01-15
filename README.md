@@ -9,3 +9,9 @@ Generally the following processes are performed:
  3. Detect particles 
  4. Process particle data
  5. Output data
+
+# Authors
+
+ - Helena Horton
+ - Larisa Swarmy
+ - Brendan O'Flaherty

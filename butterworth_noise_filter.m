@@ -1,7 +1,6 @@
 function [I3] = butterworth_noise_filter(I2,f_c)
 
-nx = length(I2(:,1));
-ny = length(I2(1,:));
+[nx,ny] = size(I2);
 
 Fs = 100; % made up sampling frequency
 T = 1/Fs; % sampling period

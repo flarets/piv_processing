@@ -40,6 +40,9 @@ I3 = uint8(I_bin).*I3;
 % extract particle data from image
 [stats] = process_image(I_bin, I3);
 
+% -----------------------------------
+% Threshold and scale particle data
+
 % Filter particles less than 0.5px
 p_min = 0.5;  % px
 p_max = 20;   % px
