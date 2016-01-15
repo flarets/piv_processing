@@ -18,21 +18,20 @@ I3 = gpuArray(I2);
 % f_c = 0.2; % cutoff frequency
 % I3 = butterworth_noise_filter(I2,f_c);
 % I3 = I2;
+
 % % increase contrast using linear function
 % threshold = 2e3;
 % I3 = I2>threshold;
 % I3 = contrast_image(I3,threshold,60e3);
+
+% matlab contrast function
 t_range = 2^16-1;
 t_min = 1900;
 t_max = 25e3;
 I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
-% matlab contrast function
-% I3 = imadjust(I3, [0.4, 0.9], []);
-% S = min(I3);
-% min(S)
-% use thresholded image to create binary
-I_bin = (I3>2e3);
+% create binary
+I_bin = I3 > t_min;
 
 % Detect edges and fill to create binary image
 % I4 = edge(I3, 'canny', 0.1);
