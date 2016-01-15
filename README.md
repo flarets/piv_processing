@@ -13,5 +13,5 @@ Generally the following processes are performed:
 # Authors
 
  - Helena Horton
- - Larisa Swarmy
+ - Laurisa Swamy
  - Brendan O'Flaherty
