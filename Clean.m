@@ -5,9 +5,9 @@ clc; clear; close all;
 
 % ifname = 'PIV 1.44lfry23.000000b.bmp';
 ifname = 'PIV 3.3tybhxyw.000000.csv';
-% I1 = imread(ifname);
+% I2 = uint16(imread(ifname));
 I2 = csvreadfile(ifname);
-I3 = gpuArray(I2);
+% I3 = gpuArray(I2);
 
 % Convert to grayscale
 % I2 = rgb2gray(I1);
@@ -15,10 +15,9 @@ I3 = gpuArray(I2);
 % Noise filters
 
 % use 6th order butterworth filter to remove noise
-% f_c = 0.2; % cutoff frequency
-% I3 = butterworth_noise_filter(I2,f_c);
-% I3 = I2;
-
+f_c = 0.6; % cutoff frequency
+I2 = butterworth_noise_filter(I2,f_c);
+I3 = gpuArray(I2);
 % % increase contrast using linear function
 % threshold = 2e3;
 % I3 = I2>threshold;
@@ -26,25 +25,26 @@ I3 = gpuArray(I2);
 
 % matlab contrast function
 t_range = 2^16-1;
-t_min = 1900;
+t_min = 2500;
+% t_min = 2800;
 t_max = 25e3;
 I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
 % create binary
 I_bin = I3 > t_min;
 
+
 % Detect edges and fill to create binary image
 % I4 = edge(I3, 'canny', 0.1);
 % I_bin = imfill(I4, 'holes'); % fill 'holes'
 % I_bin = logical(I5 - I4); % subtract 'edges' from 'filled holes'
-figure
-ax(1) = subplot(1,2,1);
-imshow(I2)
+% figure
+% ax(1) = subplot(1,2,1);
+% imshow(I2)
+% ax(2) = subplot(1,2,2);
+% imshow(I3);
+% linkaxes(ax,'xy');
 
-ax(2) = subplot(1,2,2);
-imshow(I3);
-
-linkaxes(ax,'xy');
 % -----------------------------------
 % Get particle data from noise-reduced and binary images
 
@@ -52,7 +52,7 @@ linkaxes(ax,'xy');
 [stats] = process_image(I_bin, I3);
 
 % Filter particles less than 0.5px
-p_min = 0.25;  % px
+p_min = 0.5;  % px
 p_max = 20;   % px
 [stats] = filter_pixel_size(stats, p_min, p_max);
 
@@ -98,7 +98,8 @@ title('noise removal and threshold');
 ax(2)=subplot(2,2,3);
 imshow(I_bin,'InitialMagnification','fit');
 hold on;
-C = reshape([stats.WeightedCentroid],2,length(stats))'; % particle centroids
+% C = reshape([stats.WeightedCentroid],2,length(stats))'; % particle centroids
+C = cat(1, stats.WeightedCentroid);
 plot(C(:,1), C(:,2), 'bx');
 hold off;
 title('binary image and centroids');
@@ -116,3 +117,7 @@ linkaxes(ax,'xy'); % link axes
 d = [stats.d_p];
 bw = 0.5; % bin width, um
 plot_histogram(d, bw, 'LogNormal');
+
+% Fine Particle Fraction
+d_min = 10;
+FPF = FPF(stats,d_min);
