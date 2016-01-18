@@ -26,7 +26,7 @@ I3 = gpuArray(I2);
 
 % matlab contrast function
 t_range = 2^16-1;
-t_min = 1900;
+t_min = 2800;
 t_max = 25e3;
 I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
