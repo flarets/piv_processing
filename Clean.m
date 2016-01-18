@@ -117,3 +117,7 @@ linkaxes(ax,'xy'); % link axes
 d = [stats.d_p];
 bw = 0.5; % bin width, um
 plot_histogram(d, bw, 'LogNormal');
+
+% Fine Particle Fraction
+d_min = 10;
+FPF = FPF(stats,d_min);
