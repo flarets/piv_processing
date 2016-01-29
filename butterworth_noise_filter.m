@@ -7,7 +7,7 @@ T = 1/Fs; % sampling period
 L = nx*ny; % length of signal
 t = (0:L-1)*T; % time vector
 
-X = double(reshape(I2, L, 1)); % signal
+X = double(reshape(I2, 1, L)); % signal
 
 % figure()
 % plot(t,X)
@@ -33,7 +33,7 @@ f = Fs*(0:(L/2))/L;
 % title('butterworth filter');
 
 I3 = filter(b,a,X); % filter noise
-I3 = uint8(reshape(I3,nx,ny)); % reshape
+I3 = uint16(reshape(I3,nx,ny)); % reshape
 
 % figure()
 % imshow(I3,'InitialMagnification','fit');
