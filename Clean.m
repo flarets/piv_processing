@@ -31,20 +31,22 @@ t_max = 25e3;
 I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
 % create binary
-I_bin = I3 > t_min;
+I_bin = I3 > 4000;
 
 % Detect edges and fill to create binary image
 % I4 = edge(I3, 'canny', 0.1);
 % I_bin = imfill(I4, 'holes'); % fill 'holes'
 % I_bin = logical(I5 - I4); % subtract 'edges' from 'filled holes'
-figure
+
+figure();
 ax(1) = subplot(1,2,1);
 imshow(I2)
-
+title('original image');
 ax(2) = subplot(1,2,2);
 imshow(I3);
-
+title('before and after contrasting');
 linkaxes(ax,'xy');
+
 % -----------------------------------
 % Get particle data from noise-reduced and binary images
 
@@ -88,8 +90,8 @@ title(sprintf('original image: %s', ifname));
 % plot grayscale image, thresholded image, filtered image with identified particles
 figure();
 ax(4)=subplot(2,2,1);
-imshow(I2,'InitialMagnification','fit');
-title('grayscale image');
+imshow(I3,'InitialMagnification','fit');
+title('contrasted image');
 
 ax(1)=subplot(2,2,2);
 imshow(I3,'InitialMagnification','fit');
