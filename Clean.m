@@ -25,8 +25,7 @@ I3 = gpuArray(I2);
 
 % matlab contrast function
 t_range = 2^16-1;
-t_min = 2500;
-% t_min = 2800;
+t_min = 1900;
 t_max = 25e3;
 I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
 
@@ -53,9 +52,9 @@ I_bin = I3 > 4000;
 % extract particle data from image
 [stats] = process_image(I_bin, I3);
 
-% Filter particles less than 0.5px
+% Filter particles less than 0.25px
 p_min = 0.5;  % px
-p_max = 20;   % px
+p_max = 20;    % px
 [stats] = filter_pixel_size(stats, p_min, p_max);
 
 % find intensity-weighted mean diameter in pixels and scale data
