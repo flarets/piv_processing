@@ -15,9 +15,10 @@ I2 = csvreadfile(ifname);
 % Noise filters
 
 % use 6th order butterworth filter to remove noise
-f_c = 0.6; % cutoff frequency
+f_c = 0.99; % cutoff frequency
 I2 = butterworth_noise_filter(I2,f_c);
 I3 = gpuArray(I2);
+
 % % increase contrast using linear function
 % threshold = 2e3;
 % I3 = I2>threshold;
@@ -25,12 +26,12 @@ I3 = gpuArray(I2);
 
 % matlab contrast function
 t_range = 2^16-1;
-t_min = 1900;
+t_min = 2450;
 t_max = 25e3;
-I3 = imadjust(I3,[t_min/t_range;t_max/t_range],[0;1]);
+I3 = imadjust(I3,[t_min/t_range; t_max/t_range],[0;1]);
 
 % create binary
-I_bin = I3 > 4000;
+I_bin = I3 > 3600;
 
 % Detect edges and fill to create binary image
 % I4 = edge(I3, 'canny', 0.1);
@@ -53,7 +54,7 @@ I_bin = I3 > 4000;
 [stats] = process_image(I_bin, I3);
 
 % Filter particles less than 0.25px
-p_min = 0.5;  % px
+p_min = 0.25;  % px
 p_max = 20;    % px
 [stats] = filter_pixel_size(stats, p_min, p_max);
 
@@ -70,7 +71,7 @@ close();
 
 % Filter based on diameter, um
 d_min = 0;  % um
-d_max = 30; % um
+d_max = 20; % um
 [stats] = filter_size(stats, d_min, d_max);
 
 % % Filter based on skewness

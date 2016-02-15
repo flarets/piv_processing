@@ -29,5 +29,5 @@ ylim=get(gca,'ylim');
 line([dm,dm], ylim,'Color','g');
 
 title(sprintf('histogram with %s fit',type));
-xlabel('diameter, px');
+xlabel('diameter, \mum');
 ylabel('number of particles');
