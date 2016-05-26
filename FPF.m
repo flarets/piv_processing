@@ -1,17 +1,17 @@
-function [fine_particle_fraction] = FPF(stats,d_min)
-% accepts minimum diameter and returns fraction of particles less than
-% d_min
-% (n<d_min)/n
-n = length(stats);
+function [fine_particle_fraction] = FPF(x,y,d_min)
+% accepts minimum diameter and returns fraction of particles less than it
+n = length(x);
+dx = diff(x);
 
-largerparticles = [];
-for i=1:length(stats)
-    if (stats(i).d_p >= d_min)
-        largerparticles = [largerparticles, i]; % indicies to remove
-    end
+n_total = 0;
+for i=1:(n-1)
+    n_total = n_total + dx(i)*0.5*(y(i)+y(i+1)); % newton integration
 end
-stats(largerparticles) = [];
 
-n_lessthan_dmin = length(stats);
+n_lessthan_dmin = 0;
+for i=1:(n-1)
+    if x(i) > d_min; break; end;
+    n_lessthan_dmin = n_lessthan_dmin + dx(i)*0.5*(y(i)+y(i+1)); % newton integration
+end
 
-fine_particle_fraction = (n_lessthan_dmin)/n;
+fine_particle_fraction = n_lessthan_dmin/n_total;

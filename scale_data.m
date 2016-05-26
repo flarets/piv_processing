@@ -1,7 +1,4 @@
-function [stats] = scale_data(stats, dp_m, de_m)
-
-% calculate constant in um/px
-constant = (dp_m/de_m); % calibration constant, um/pixel
+function [stats] = scale_data(stats, constant)
 
 % calculate actual particle diameter and add to stats
 for i=1:length(stats)

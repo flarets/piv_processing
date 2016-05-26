@@ -3,7 +3,7 @@ function [stats, I_bin] = process_image(I_bin, I3)
 % Returns table of particle properties
 
 % process image
-stats = regionprops('struct',I_bin,I3,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid');
+stats = regionprops('struct',I_bin,I3,'PixelList','MaxIntensity','MinIntensity','PixelValues','MeanIntensity','WeightedCentroid','MajorAxisLength','MinorAxisLength');
 
 % for each particle, calculate sig_x, sig_y and add to stats
 for i=1:length(stats)
@@ -14,8 +14,11 @@ for i=1:length(stats)
 end
 
 % calculate intensity-weighted particle diameter in pixels and add to stats
+% standard deviation = particle radius
+% average diameter = r_(x-dir) + r_(y_dir)
+
 for i=1:length(stats)
-    stats(i).d_e = 0.5*([stats(i).sig_x] + [stats(i).sig_y]);
+    stats(i).d_e = ([stats(i).sig_x] + [stats(i).sig_y]);
 end
 
 % remove zero-sized entries
