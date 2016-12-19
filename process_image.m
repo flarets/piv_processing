@@ -18,7 +18,7 @@ end
 % average diameter = r_(x-dir) + r_(y_dir)
 
 for i=1:length(stats)
-    stats(i).d_e = ([stats(i).sig_x] + [stats(i).sig_y]);
+    stats(i).d_e = 2*([stats(i).sig_x] + [stats(i).sig_y]);
 end
 
 % remove zero-sized entries
